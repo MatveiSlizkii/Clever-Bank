@@ -11,7 +11,7 @@ public interface IBankService {
 
     Bank get (UUID uuid);
     List<Bank> gatAll ();
-    Bank create (User user);
+    Bank create (Bank bank);
     Bank delete (UUID uuid, LocalDateTime dbLastUpdate);
     Bank update (Bank bank, LocalDateTime dbLastUpdate);
 }

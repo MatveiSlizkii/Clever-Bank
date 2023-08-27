@@ -12,7 +12,7 @@ public interface IAccountService {
 
     Account get (UUID uuid);
     List<Account> gatAll ();
-    Account create (User user);
+    Account create (Account account);
     Account delete (UUID uuid, LocalDateTime dbLastUpdate);
     Account update (Account account, LocalDateTime dbLastUpdate);
 }
