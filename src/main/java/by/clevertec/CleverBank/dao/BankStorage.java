@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class BanksStorage implements IBankStorage {
+public class BankStorage implements IBankStorage {
     private final IRowMapper<Bank> mapper = new BankMapper();
 
     Statement stmt = ConnectStorage.connect();
@@ -23,7 +23,7 @@ public class BanksStorage implements IBankStorage {
         Bank bank;
         try {
             String getSql = "SELECT uuid, name, db_create, db_last_update\n" +
-                    "\tFROM app.banks WHERE \"name\" = '" + uuid + "';";
+                    "\tFROM app.banks WHERE \"uuid\" = '" + uuid + "';";
             try (ResultSet rs = stmt.executeQuery(getSql)) {
                      bank = mapper.mapRow(rs);
             }
@@ -55,8 +55,9 @@ public class BanksStorage implements IBankStorage {
     public Bank create(Bank bank) {
 
         try {
-            String insertSql = "INSERT INTO app.banks(uuid, name)"
-                    + " VALUES('" + bank.getUuid() + "', '" + bank.getName() + "')";
+            String insertSql = "INSERT INTO app.banks(uuid, name, db_create, db_last_update)"
+                    + " VALUES('" + bank.getUuid() + "', '" + bank.getName() + "', '" + bank.getDbCreate()+"', '" +
+                    bank.getDbLastUpdate()+"')";
             stmt.executeUpdate(insertSql);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -68,9 +69,9 @@ public class BanksStorage implements IBankStorage {
     public Bank update(Bank bank, UUID uuid, LocalDateTime lastUpdate) throws EssenceNotFound {
         try {
             String update = "UPDATE app.banks\n" +
-                    "\tSET uuid='" + uuid + "', name='" + bank.getName() + "'," +
+                    "\tSET name='" + bank.getName() + "'," +
                     ", db_last_update='" + LocalDateTime.now() + "' " +
-                    "\tWHERE uuid = '" + uuid + "' AND db_last_update = " + lastUpdate;
+                    "\tWHERE uuid = '" + uuid + "' AND db_last_update = '" + lastUpdate +"';";
             stmt.executeUpdate(update);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -83,7 +84,7 @@ public class BanksStorage implements IBankStorage {
         Bank bank = this.get(uuid);
         try {
             String delete = "DELETE FROM app.banks\n" +
-                    "\tWHERE uuid = '" + uuid + "' AND db_last_update = " + lastUpdate;
+                    "\tWHERE uuid = '" + uuid + "' AND db_last_update = '" + lastUpdate +"';";
             stmt.executeUpdate(delete);
         } catch (SQLException e) {
             throw new RuntimeException(e);

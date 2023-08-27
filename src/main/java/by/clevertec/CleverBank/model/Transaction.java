@@ -21,4 +21,5 @@ public class Transaction {
     private Double sum;
     private TypeTransaction type;
     private LocalDateTime dbCreate;
+    private LocalDateTime dbLastUpdate;
 }

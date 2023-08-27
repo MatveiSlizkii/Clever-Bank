@@ -21,6 +21,7 @@ public class TransactionMapper implements IRowMapper<Transaction>{
                 .sum(rs.getDouble("sum"))
                 .type(TypeTransaction.valueOf(rs.getString("type")))
                 .dbCreate(rs.getObject("db_create", LocalDateTime.class))
+                .dbLastUpdate(rs.getObject("db_create", LocalDateTime.class))
                 .build();
     }
 }
