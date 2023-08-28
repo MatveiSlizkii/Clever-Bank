@@ -11,7 +11,7 @@ public interface IUserStorage extends ICUDRepository<User, UUID> {
 
     List<User> gatAll ();
 
-    boolean existByUuid (UUID uuid);
+    boolean isExistByUuid(UUID uuid);
 
     @Override
     User create(User item);

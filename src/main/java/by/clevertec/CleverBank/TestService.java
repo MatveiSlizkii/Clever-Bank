@@ -1,6 +1,5 @@
 package by.clevertec.CleverBank;
 
-import by.clevertec.CleverBank.dao.UserStorage;
 import by.clevertec.CleverBank.model.User;
 import by.clevertec.CleverBank.services.UserService;
 
@@ -26,6 +25,6 @@ public class TestService {
        // System.out.println(userService.getAll());
         //System.out.println(userService.update(user, ldt));
       //  System.out.println(userService.delete(uuid, ldt));
-        System.out.println(userService.isExist(uuid));
+        System.out.println(userService.isExistByUuid(uuid));
     }
 }

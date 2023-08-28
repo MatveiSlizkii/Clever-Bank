@@ -10,6 +10,8 @@ public interface ITransactionService {
 
     Transaction get (UUID uuid);
     List<Transaction> getAll();
+    boolean isExistByUuid (UUID uuid);
+
     Transaction create (Transaction transaction);
     Transaction delete (UUID uuid, LocalDateTime dbLastUpdate);
     Transaction update (Transaction transaction, LocalDateTime dbLastUpdate);

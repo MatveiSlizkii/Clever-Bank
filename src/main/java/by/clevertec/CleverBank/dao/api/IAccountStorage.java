@@ -11,6 +11,7 @@ public interface IAccountStorage extends ICUDRepository<Account, UUID> {
     Account get (UUID uuid);
     List<Account> getAll();
 
+    boolean isExistByUuid (UUID uuid);
 
     @Override
     Account create(Account account);
@@ -18,6 +19,10 @@ public interface IAccountStorage extends ICUDRepository<Account, UUID> {
     @Override
     Account update(Account account, UUID uuid, LocalDateTime lastUpdate) throws EssenceNotFound;
 
+    Account updateSum (UUID uuid, Double newSum, LocalDateTime lastUpdate) throws EssenceNotFound;
+
     @Override
     Account delete(UUID uuid, LocalDateTime lastUpdate) throws EssenceNotFound;
+
+
 }

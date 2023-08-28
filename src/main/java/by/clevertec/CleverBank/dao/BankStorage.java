@@ -50,6 +50,25 @@ public class BankStorage implements IBankStorage {
         }
         return banks;
     }
+    @Override
+    public boolean isExistByUuid(UUID uuid) {
+        boolean result = false;
+        try {
+            String insertSql = "SELECT EXISTS (\n" +
+                    "    SELECT 1\n" +
+                    "    FROM app.banks\n" +
+                    "    WHERE uuid = '" + uuid + "'\n" +
+                    ");";
+            try (ResultSet rs = stmt.executeQuery(insertSql)) {
+                while (rs.next()) {
+                    result =  rs.getObject("exists", Boolean.class);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
+    }
 
     @Override
     public Bank create(Bank bank) {
@@ -60,7 +79,7 @@ public class BankStorage implements IBankStorage {
                     bank.getDbLastUpdate()+"')";
             stmt.executeUpdate(insertSql);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to create entity \n" + e);
         }
         return bank;
     }
@@ -74,7 +93,7 @@ public class BankStorage implements IBankStorage {
                     "\tWHERE uuid = '" + uuid + "' AND db_last_update = '" + lastUpdate +"';";
             stmt.executeUpdate(update);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("The requested version is outdated");
         }
         return this.get(uuid);
     }
@@ -87,7 +106,7 @@ public class BankStorage implements IBankStorage {
                     "\tWHERE uuid = '" + uuid + "' AND db_last_update = '" + lastUpdate +"';";
             stmt.executeUpdate(delete);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("The requested version is outdated");
         }
         return bank;
     }

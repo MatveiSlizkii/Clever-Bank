@@ -1,5 +1,6 @@
 package by.clevertec.CleverBank.dao;
 
+import by.clevertec.CleverBank.advice.ExceptionAdvice;
 import by.clevertec.CleverBank.dao.api.ConnectStorage;
 import by.clevertec.CleverBank.dao.api.EssenceNotFound;
 import by.clevertec.CleverBank.dao.api.ITransactionStorage;
@@ -55,6 +56,25 @@ public class TransactionStorage implements ITransactionStorage {
         }
         return transactions;
     }
+    @Override
+    public boolean isExistByUuid(UUID uuid) {
+        boolean result = false;
+        try {
+            String insertSql = "SELECT EXISTS (\n" +
+                    "    SELECT 1\n" +
+                    "    FROM app.transactions\n" +
+                    "    WHERE uuid = '" + uuid + "'\n" +
+                    ");";
+            try (ResultSet rs = stmt.executeQuery(insertSql)) {
+                while (rs.next()) {
+                    result =  rs.getObject("exists", Boolean.class);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
+    }
 
     @Override
     public Transaction create(Transaction transaction) {
@@ -71,14 +91,14 @@ public class TransactionStorage implements ITransactionStorage {
                     transaction.getDbLastUpdate() + "')";
             stmt.executeUpdate(insertSql);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to create entity \n" + e);
         }
         return transaction;
     }
 
     @Override
     public Transaction update(Transaction transaction, UUID uuid, LocalDateTime lastUpdate) throws EssenceNotFound {
-        return null;
+        throw new ExceptionAdvice("This entity cannot be updated");
     }
 
     @Override
@@ -89,7 +109,7 @@ public class TransactionStorage implements ITransactionStorage {
                     "\tWHERE uuid = '" + uuid + "' AND db_last_update = " + lastUpdate;
             stmt.executeUpdate(delete);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("The requested version is outdated");
         }
         return transaction;
     }

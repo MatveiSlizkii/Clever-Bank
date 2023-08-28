@@ -57,7 +57,7 @@ public class UserStorage implements IUserStorage {
     }
 
     @Override
-    public boolean existByUuid(UUID uuid) {
+    public boolean isExistByUuid(UUID uuid) {
         boolean result = false;
         try {
             String insertSql = "SELECT EXISTS (\n" +
@@ -87,7 +87,7 @@ public class UserStorage implements IUserStorage {
                     user.getDbLastUpdate() + "')";
             stmt.executeUpdate(insertSql);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to create entity \n" + e);
         }
         return user;
     }
@@ -103,7 +103,7 @@ public class UserStorage implements IUserStorage {
             System.out.println(update);
             stmt.executeUpdate(update);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("The requested version is outdated");
         }
         return this.get(uuid);
     }
@@ -116,7 +116,7 @@ public class UserStorage implements IUserStorage {
                     "\tWHERE uuid = '" + uuid + "' AND db_last_update = '" + lastUpdate + "';";
             stmt.executeUpdate(delete);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("The requested version is outdated");
         }
         return user;
     }

@@ -57,6 +57,26 @@ public class AccountStorage implements IAccountStorage {
     }
 
     @Override
+    public boolean isExistByUuid(UUID uuid) {
+        boolean result = false;
+        try {
+            String insertSql = "SELECT EXISTS (\n" +
+                    "    SELECT 1\n" +
+                    "    FROM app.accounts\n" +
+                    "    WHERE uuid = '" + uuid + "'\n" +
+                    ");";
+            try (ResultSet rs = stmt.executeQuery(insertSql)) {
+                while (rs.next()) {
+                    result =  rs.getObject("exists", Boolean.class);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return result;
+    }
+
+    @Override
     public Account create(Account account) {
         try {
             String insertSql = "INSERT INTO app.accounts(\n" +
@@ -68,7 +88,7 @@ public class AccountStorage implements IAccountStorage {
                     account.getDbLastUpdate() + "')";
             stmt.executeUpdate(insertSql);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to create entity \n" + e);
         }
         return account;
     }
@@ -83,7 +103,21 @@ public class AccountStorage implements IAccountStorage {
                     "\tWHERE uuid = '" + uuid + "' AND db_last_update = " + lastUpdate;
             stmt.executeUpdate(update);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("The requested version is outdated");
+        }
+        return this.get(uuid);
+    }
+
+    @Override
+    public Account updateSum(UUID uuid, Double newSum, LocalDateTime lastUpdate) throws EssenceNotFound {
+        try {
+            String update = "UPDATE app.accounts\n" +
+                    "\tSET sum = '" + newSum + "', " +
+                    "db_last_update='" + LocalDateTime.now() + "' " +
+                    "\tWHERE uuid = '" + uuid + "' AND db_last_update = " + lastUpdate;
+            stmt.executeUpdate(update);
+        } catch (SQLException e) {
+            throw new RuntimeException("The requested version is outdated");
         }
         return this.get(uuid);
     }
@@ -96,7 +130,7 @@ public class AccountStorage implements IAccountStorage {
                     "\tWHERE uuid = '" + uuid + "' AND db_last_update = " + lastUpdate;
             stmt.executeUpdate(delete);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("The requested version is outdated");
         }
         return account;
     }

@@ -1,5 +1,6 @@
 package by.clevertec.CleverBank.services;
 
+import by.clevertec.CleverBank.advice.ExceptionAdvice;
 import by.clevertec.CleverBank.dao.BankStorage;
 import by.clevertec.CleverBank.dao.api.IBankStorage;
 import by.clevertec.CleverBank.model.Bank;
@@ -14,17 +15,24 @@ public class BankService implements IBankService {
     private final IBankStorage bankStorage = new BankStorage();
     @Override
     public Bank get(UUID uuid) {
-
+        if (!this.isExistByUuid(uuid)) throw new ExceptionAdvice("Bank not found");
         return bankStorage.get(uuid);
     }
 
     @Override
-    public List<Bank> gatAll() {
+    public List<Bank> getAll() {
         return bankStorage.getAll();
     }
 
     @Override
+    public boolean isExistByUuid(UUID uuid) {
+        return bankStorage.isExistByUuid(uuid);
+    }
+
+    @Override
     public Bank create(Bank bank) {
+
+        if (bank.getName() == null) throw new ExceptionAdvice("You did not enter the field \"name\"");
         LocalDateTime ldt = LocalDateTime.now();
 
         bank.setUuid(UUID.randomUUID());
@@ -37,12 +45,15 @@ public class BankService implements IBankService {
 
     @Override
     public Bank delete(UUID uuid, LocalDateTime dbLastUpdate) {
-
+        if (!this.isExistByUuid(uuid)) throw new ExceptionAdvice("Bank not found");
         return bankStorage.delete(uuid, dbLastUpdate);
     }
 
     @Override
     public Bank update(Bank bank, LocalDateTime dbLastUpdate) {
+        if (!isExistByUuid(bank.getUuid())){
+            throw new ExceptionAdvice("Bank not found");
+        }
         return bankStorage.update(bank, bank.getUuid(), dbLastUpdate);
     }
 }

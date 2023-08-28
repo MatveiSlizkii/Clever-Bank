@@ -10,6 +10,8 @@ import java.util.UUID;
 public interface ITransactionStorage extends ICUDRepository<Transaction, UUID>{
     Transaction get (UUID uuid);
     List<Transaction> getAll();
+    boolean isExistByUuid (UUID uuid);
+
     @Override
     Transaction create(Transaction transaction);
 

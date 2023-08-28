@@ -11,7 +11,7 @@ public interface IUserService {
     User get (UUID uuid);
     List<User> getAll();
 
-    Boolean isExist (UUID uuid);
+    Boolean isExistByUuid(UUID uuid);
     User create (User user);
     User delete (UUID uuid, LocalDateTime dbLastUpdate);
     User update (User user, LocalDateTime dbLastUpdate);

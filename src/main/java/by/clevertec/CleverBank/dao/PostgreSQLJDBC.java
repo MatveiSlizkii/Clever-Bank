@@ -15,7 +15,6 @@ public class PostgreSQLJDBC {
         String getAll = "SELECT uuid, name, db_create, db_last_update\n" +
                 "\tFROM app.banks";
         try (ResultSet rs = stmt.executeQuery(getAll)) {
-            int columns = rs.getMetaData().getColumnCount();
             while (rs.next()) {
                 System.out.println(rs.getObject("uuid", UUID.class));
                 System.out.println(rs.getString("name"));

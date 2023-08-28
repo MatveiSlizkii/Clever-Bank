@@ -11,6 +11,8 @@ public interface IBankStorage extends ICUDRepository<Bank, UUID> {
     Bank get (UUID uuid);
 
     List<Bank> getAll ();
+    boolean isExistByUuid (UUID uuid);
+
 
     @Override
     Bank create(Bank bank);
