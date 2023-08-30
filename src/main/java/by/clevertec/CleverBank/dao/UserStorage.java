@@ -16,6 +16,22 @@ import java.util.List;
 import java.util.UUID;
 
 public class UserStorage implements IUserStorage {
+    private static UserStorage instance = null;
+
+    // Приватный конструктор, чтобы запретить создание экземпляров класса извне
+    private UserStorage() {
+        // Дополнительный код для инициализации объекта
+    }
+    // Статический метод, возвращающий единственный экземпляр класса. Если экземпляр ещё не создан, создаёт его
+    public static synchronized UserStorage getInstance() {
+        if (instance == null) {
+            instance = new UserStorage();
+        }
+        return instance;
+    }
+
+
+
 
     private final IRowMapper<User> mapper = new UserMapper();
 

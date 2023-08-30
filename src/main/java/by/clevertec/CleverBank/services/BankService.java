@@ -12,7 +12,22 @@ import java.util.List;
 import java.util.UUID;
 
 public class BankService implements IBankService {
-    private final IBankStorage bankStorage = new BankStorage();
+    private final IBankStorage bankStorage = BankStorage.getInstance();
+
+    private static BankService instance = null;
+
+    // Приватный конструктор, чтобы запретить создание экземпляров класса извне
+    private BankService() {
+        // Дополнительный код для инициализации объекта
+    }
+    // Статический метод, возвращающий единственный экземпляр класса. Если экземпляр ещё не создан, создаёт его
+    public static synchronized BankService getInstance() {
+        if (instance == null) {
+            instance = new BankService();
+        }
+        return instance;
+    }
+
     @Override
     public Bank get(UUID uuid) {
         if (!this.isExistByUuid(uuid)) throw new ExceptionAdvice("Bank not found");
@@ -33,6 +48,7 @@ public class BankService implements IBankService {
     public Bank create(Bank bank) {
 
         if (bank.getName() == null) throw new ExceptionAdvice("You did not enter the field \"name\"");
+        System.out.println(bank.getName() == null);
         LocalDateTime ldt = LocalDateTime.now();
 
         bank.setUuid(UUID.randomUUID());

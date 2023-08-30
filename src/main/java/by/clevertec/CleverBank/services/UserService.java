@@ -12,9 +12,21 @@ import java.util.List;
 import java.util.UUID;
 
 public class UserService implements IUserService {
-    private final IUserStorage userStorage = new UserStorage();
+    private final IUserStorage userStorage = UserStorage.getInstance();
 
+    private static UserService instance = null;
 
+    // Приватный конструктор, чтобы запретить создание экземпляров класса извне
+    private UserService() {
+        // Дополнительный код для инициализации объекта
+    }
+    // Статический метод, возвращающий единственный экземпляр класса. Если экземпляр ещё не создан, создаёт его
+    public static synchronized UserService getInstance() {
+        if (instance == null) {
+            instance = new UserService();
+        }
+        return instance;
+    }
 
     @Override
     public User get(UUID uuid) {
@@ -39,7 +51,8 @@ public class UserService implements IUserService {
         if (user.getName() == null) errors.add("You did not enter the field \"Name\"");
         if (user.getSurname() == null) errors.add("You did not enter the field \"Surname\"");
         if (user.getPatronymic() == null) errors.add("You did not enter the field \"Patronymic\"");
-        if (errors.isEmpty()) throw new ExceptionAdvice(errors);
+        System.out.println(errors.isEmpty());
+        if (!errors.isEmpty()) throw new ExceptionAdvice(errors);
 
         LocalDateTime ldt = LocalDateTime.now();
         user.setUuid(UUID.randomUUID());

@@ -18,9 +18,24 @@ import java.util.UUID;
 
 public class TransactionStorage implements ITransactionStorage {
 
+    private static TransactionStorage instance = null;
+
+    // Приватный конструктор, чтобы запретить создание экземпляров класса извне
+    private TransactionStorage() {
+        // Дополнительный код для инициализации объекта
+    }
+    // Статический метод, возвращающий единственный экземпляр класса. Если экземпляр ещё не создан, создаёт его
+    public static synchronized TransactionStorage getInstance() {
+        if (instance == null) {
+            instance = new TransactionStorage();
+        }
+        return instance;
+    }
+
+
     private final IRowMapper<Transaction> mapper = new TransactionMapper();
 
-    Statement stmt = ConnectStorage.connect();
+    private final Statement stmt = ConnectStorage.connect();
 
     @Override
     public Transaction get(UUID uuid) {
@@ -112,5 +127,20 @@ public class TransactionStorage implements ITransactionStorage {
             throw new RuntimeException("The requested version is outdated");
         }
         return transaction;
+    }
+
+    @Override
+    public List<Transaction> getAllByAccount() {
+        return null;
+    }
+
+    @Override
+    public List<Double> getSumSumByUuidAccountSenders(UUID uuid) {
+        return null;
+    }
+
+    @Override
+    public List<Double> getSumSumByUuidAccountRecipient(UUID uuid) {
+        return null;
     }
 }

@@ -14,9 +14,24 @@ import java.util.List;
 import java.util.UUID;
 
 public class BankStorage implements IBankStorage {
+
+
+    private static BankStorage instance = null;
+
+    // Приватный конструктор, чтобы запретить создание экземпляров класса извне
+    private BankStorage() {
+        // Дополнительный код для инициализации объекта
+    }
+    // Статический метод, возвращающий единственный экземпляр класса. Если экземпляр ещё не создан, создаёт его
+    public static synchronized BankStorage getInstance() {
+        if (instance == null) {
+            instance = new BankStorage();
+        }
+        return instance;
+    }
     private final IRowMapper<Bank> mapper = new BankMapper();
 
-    Statement stmt = ConnectStorage.connect();
+    private final Statement stmt = ConnectStorage.connect();
 
     @Override
     public Bank get(UUID uuid) {
@@ -76,7 +91,8 @@ public class BankStorage implements IBankStorage {
         try {
             String insertSql = "INSERT INTO app.banks(uuid, name, db_create, db_last_update)"
                     + " VALUES('" + bank.getUuid() + "', '" + bank.getName() + "', '" + bank.getDbCreate()+"', '" +
-                    bank.getDbLastUpdate()+"')";
+                    bank.getDbLastUpdate()+"');";
+            System.out.println(insertSql);
             stmt.executeUpdate(insertSql);
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create entity \n" + e);

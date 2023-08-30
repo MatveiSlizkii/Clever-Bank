@@ -2,6 +2,7 @@ package by.clevertec.CleverBank.services;
 
 import by.clevertec.CleverBank.advice.ExceptionAdvice;
 import by.clevertec.CleverBank.dao.AccountStorage;
+import by.clevertec.CleverBank.dao.UserStorage;
 import by.clevertec.CleverBank.dao.api.IAccountStorage;
 import by.clevertec.CleverBank.model.Account;
 import by.clevertec.CleverBank.model.enums.TypeCurrency;
@@ -15,9 +16,25 @@ import java.util.List;
 import java.util.UUID;
 
 public class AccountService implements IAccountService {
-    private final IAccountStorage accountStorage = new AccountStorage();
-    private final IUserService userService = new UserService();
-    private final IBankService bankService = new BankService();
+    private final IAccountStorage accountStorage = AccountStorage.getInstance();
+    private final IUserService userService = UserService.getInstance();
+    private final IBankService bankService = BankService.getInstance();
+
+    private static AccountService instance = null;
+
+    // Приватный конструктор, чтобы запретить создание экземпляров класса извне
+    private AccountService() {
+        // Дополнительный код для инициализации объекта
+    }
+    // Статический метод, возвращающий единственный экземпляр класса. Если экземпляр ещё не создан, создаёт его
+    public static synchronized AccountService getInstance() {
+        if (instance == null) {
+            instance = new AccountService();
+        }
+        return instance;
+    }
+
+
     @Override
     public Account get(UUID uuid) {
         if (!this.isExistByUuid(uuid)) throw new ExceptionAdvice("Account not found");
@@ -47,13 +64,13 @@ public class AccountService implements IAccountService {
         if (errors.isEmpty()) throw new ExceptionAdvice(errors);
         if (!userService.isExistByUuid(account.getUser())) errors.add("User not found");
         if (!bankService.isExistByUuid(account.getBank())) errors.add("Bank not found");
+        if (account.getSum() < 0) errors.add("You enter the field \"sum\" negative value");
         if (errors.isEmpty()) throw new ExceptionAdvice(errors);
 
         LocalDateTime ldt = LocalDateTime.now();
         account.setUuid(UUID.randomUUID());
         account.setDbCreate(ldt);
         account.setDbLastUpdate(ldt);
-
 
 
         return accountStorage.create(account);

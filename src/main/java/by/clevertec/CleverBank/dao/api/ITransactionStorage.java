@@ -10,6 +10,10 @@ import java.util.UUID;
 public interface ITransactionStorage extends ICUDRepository<Transaction, UUID>{
     Transaction get (UUID uuid);
     List<Transaction> getAll();
+
+    List<Transaction> getAllByAccount();
+    List <Double> getSumSumByUuidAccountSenders (UUID uuid);
+    List <Double> getSumSumByUuidAccountRecipient (UUID uuid);
     boolean isExistByUuid (UUID uuid);
 
     @Override
